@@ -1,0 +1,5 @@
+host                = "34.93.94.54"
+user                = "bookmyauto_test_admin"
+password            = "bookmyauto@123"
+database            = "user_db"
+distance_matric_api = "AIzaSyDGkC2in7dX-yDs-y1RJRDyRQhwCUQ8XFo"
