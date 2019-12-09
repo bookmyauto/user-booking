@@ -1,5 +1,8 @@
-host                = "34.93.94.54"
-user                = "bookmyauto_test_admin"
-password            = "bookmyauto@123"
-database            = "user_db"
-distance_matric_api = "AIzaSyDGkC2in7dX-yDs-y1RJRDyRQhwCUQ8XFo"
+HOST                = "127.0.0.1"
+USER                = "root"
+PASSWORD            = "rahul@123"
+DATABASE            = "user_db"
+FIREBASE_USER       = "https://bookmyauto-test.firebaseio.com/users/"
+FIREBASE_DRIVER     = "https://bookmyauto-test.firebaseio.com/drivers/"
+BOOKING_DONE        = 1
+USER_CANCELLED      = 2
