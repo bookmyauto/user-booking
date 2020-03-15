@@ -1,133 +1,136 @@
+"""
+                Description : contains code for firebase handling of user
+                Author      : Rahul Tudu
+"""
 import requests
 import config
 import logging
 import json
 import constant as C
 
-class Firebase:
-    
-    # Checks if any user has a current booking or not
-    @staticmethod
-    def check_user(user_number, from_lon, from_lat, to_lon, to_lat, booking_id, paymemt):
-        try:
-            response        = requests.get(config.FIREBASE_USER + user_number + ".json")
-            logging.debug("Status code is " + str(response.status_code))
-            if response.status_code == 200:
-                if response.json() is None:
-                    payload                 = {}
-                    payload["requester"]    = []
-                    payload["driver"]       = C.DRIVER_FREE
-                    payload["status"]       = C.USER_FREE
-                    payload["bookingId"]    = booking_id
-                    payload["from_lon"]     = from_lon
-                    payload["from_lat"]     = from_lat
-                    payload["to_lon"]       = to_lon
-                    payload["to_lat"]       = to_lat
-                    payload["fare"]         = payment
 
-                    payload                 = json.dumps(payload)
-                    response                = requests.put(config.FIREBASE_USER + user_number + ".json", data = payload)
-                    logging.debug("New user is created in firebase users")
+class Firebase:
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   INITIALIZING WITH A NEW BOOKING                                                                                         #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    @staticmethod
+    def initialize(user_number, fromLon, fromLat, toLon, toLat, booking_id, payment, seats):
+        try:
+            payload                     = {"driver": C.DRIVER_FREE, "status": C.USER_REQUESTING,
+                                           "bookingId": booking_id, "requester": [], "seats": seats, "fare": payment,
+                                           "fromLon": float(fromLon), "fromLat": float(fromLat),
+                                           "toLon": float(toLon), "toLat": float(toLat)}
+
+            payload                     = json.dumps(payload)
+            response                    = requests.put(config.FIREBASE_USER + str(user_number) + ".json", data = payload)
+            logging.debug("  " + str(user_number) + ":  Put request sent to firebase for initialization")
+            if response.status_code == 200:
+                return 1
+            else:
+                logging.debug("  " + str(user_number) + ":  Error in initializing user")
+                return 0
+        except Exception as e:
+            logging.error("  " + str(user_number) + ":  Error while initializing user in firebase users: " + str(e))
+            return 0
+    
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   CHECK STATUS OF USER                                                                                                    #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    @staticmethod
+    def check_user(user_number):
+        try:
+            response        = requests.get(config.FIREBASE_USER + str(user_number) + ".json")
+            if response.status_code == 200:
                 response    = dict(response.json())
                 return response["driver"], response["status"]
             else:
-                logging.warning("Firebase request status code is " + str(response.status_code))
+                logging.debug("  " + str(user_number) + ":  Firebase request status code is " + str(response.status_code))
                 return C.WRONG, C.WRONG
         except Exception as e:
-            logging.error("Error while checking firebase database of users: " + str(e))
+            logging.error("  " + str(user_number) + ":  Error while checking firebase database of users: " + str(e))
             return C.WRONG, C.WRONG
-
-    # Resets status of a user
-    @staticmethod
-    def reset_user(user_number):
-        try:
-            payload                     = {}
-            payload["driver"]           = C.DRIVER_FREE
-            payload["status"]           = C.USER_FREEE
-            payload["bookingId"]        = C.NO_BOOKING
-            payload["requester"]        = []
-            payload["fare"]             = C.NO_FARE
-            payload["from_lon"]         = C.NO_FROM
-            payload["from_lat"]         = C.NO_FROM
-            payload["to_lon"]           = C.NO_TO
-            payload["to_lat"]           = C.NO_TO
-
-            payload                     = json.dumps(payload)
-            response                    = requests.put(config.FIREBASE_USER + user_number + ".json", data = payload)
-            if response.status_code == 200:
-                return 1
-            else:
-                logging.debug("Error in resetting user")
-                return 0
-        except Exception as e:            
-            logging.error("Error while resetting user in firebase users: " + str(e))
-            return 0
-
-    # Resets status of a driver
-    @staticmethod
-    def reset_driver(driver_number):
-        try:
-            payload                 = {}
-            payload["status"]       = C.DRIVER_FREE
-            payload["user"]         = C.USER_FREE
-            payload["bookingId"]    = C.NO_BOOKING
-            payload["fare"]         = C.NO_FARE
-            payload["from_lon"]     = C.NO_FROM
-            payload["from_lat"]     = C.NO_FROM
-            payload["to_lon"]       = C.NO_TO
-            payload["to_lat"]       = C.NO_TO
-            payload                 = json.dumps(payload)
-            response                = requests.put(config.FIREBASE_DRIVER + driver_number + ".json", data  = payload)
-            if response.status_code == 200:
-                return 1
-            else:
-                logging.warning("Firebase request status is " + str(response.status_code))
-                return 0
-        except Exception as e:
-            logging.error("Error while resetting status of driver in firebase drivers: " + str(e))
-            return 0
-
-    # Checks status of a driver
+    
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   CHECK STATUS OF DRIVER                                                                                                  #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
     @staticmethod
     def check_driver(driver_number):
         try:
-            response        = requests.get(config.FIREBASE_DRIVER + driver_number + ".json")
-            logging.debug("Status code is " + str(response.status_code))
+            response        = requests.get(config.FIREBASE_DRIVER + str(driver_number) + ".json")
             if response.status_code == 200:
                 response    = dict(response.json())
                 return response["user"], response["status"]
             else:
-                logging.warning("Firebase status code is " + str(response.status_code))
                 return C.WRONG, C.WRONG
         except Exception as e:
-            logging.error("Error while checking firebase database of drivers: " + str(e))
+            logging.error("  Error while checking firebase database of users: " + str(e))
             return C.WRONG, C.WRONG
-
-    # Requests a driver for ride
+    
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   RESET USER                                                                                                              #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
     @staticmethod
-    def request_driver(user_number, driver_number, booking_id, payment, from_, to_):
+    def reset_user(user_number):
         try:
-            payload                 = {}
-            payload["user"]         = user_number
-            payload["status"]       = C.DRIVER_GET_REQUEST
-            payload["bookingId"]    = booking_id
-            payload["fare"]         = payment
-            payload["from_lon"]     = from_lon
-            payload["from_lat"]     = from_lat
-            payload["to_lon"]       = to_lon
-            payload["to_lat"]       = to_lat
-            payload                 = json.dumps(payload)
-            response                = requests.put(config.FIREBASE_DRIVER + driver_number + ".json", data  = payload)
+            payload                     = {"driver": C.DRIVER_FREE, "status": C.USER_FREE, "bookingId": C.NO_BOOKING,
+                                           "seats": C.NO_SEATS, "requester": [], "fare": C.NO_FARE,
+                                           "fromLon": C.NO_FROM, "fromLat": C.NO_FROM, "toLon": C.NO_TO,
+                                           "toLat": C.NO_TO}
+
+            payload                     = json.dumps(payload)
+            response                    = requests.put(config.FIREBASE_USER + str(user_number) + ".json", data = payload)
             if response.status_code == 200:
                 return 1
             else:
-                logging.warning("Firebase request status is " + str(response.status_code))
+                logging.debug("  " + str(user_number) + ":  Error in resetting user")
                 return 0
-        except Exception as e:
-            logging.error("Error while requesting driver in firebase drivers: " + str(e))
+        except Exception as e:            
+            logging.error("  " + str(user_number) + ":  Error while resetting user in firebase users: " + str(e))
             return 0
 
-    # Update requester list in firebase
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   RESET DRIVER                                                                                                            #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    @staticmethod
+    def reset_driver(driver_number):
+        try:
+            payload                 = {"status": C.DRIVER_FREE, "user": C.USER_FREE, "bookingId": C.NO_BOOKING,
+                                       "fare": C.NO_FARE, "seats": C.NO_SEATS, "fromLon": C.NO_FROM,
+                                       "fromLat": C.NO_FROM, "toLon": C.NO_TO, "toLat": C.NO_TO}
+            payload                 = json.dumps(payload)
+            response                = requests.put(config.FIREBASE_DRIVER + str(driver_number) + ".json", data  = payload)
+            if response.status_code == 200:
+                return 1
+            else:
+                return 0
+        except Exception as e:
+            logging.error("  Error while resetting status of driver in firebase drivers: " + str(e))
+            return 0
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   REQUEST A DRIVER FOR RIDE                                                                                               #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    @staticmethod
+    def request_driver(user_number, driver_number, booking_id, payment, fromLon, fromLat, toLon, toLat, seats):
+        try:
+            payload                 = {"user": int(user_number), "status": C.DRIVER_GET_REQUEST,
+                                       "bookingId": booking_id, "fare": payment, "seats": seats,
+                                       "fromLon": float(fromLon), "fromLat": float(fromLat),
+                                       "toLon": float(toLon), "toLat": float(toLat)}
+            payload                 = json.dumps(payload)
+            response                = requests.put(config.FIREBASE_DRIVER + str(driver_number) + ".json", data  = payload)
+            if response.status_code == 200:
+                return 1
+            else:
+                return 0
+        except Exception as e:
+            logging.error("  " + str(user_number) + ":  Error while requesting driver in firebase drivers: " + str(e))
+            return 0
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   UPDATE REQUESTER LIST OF USER                                                                                           #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
     @staticmethod
     def update_requester(user_number, current_drivers):
         try:
@@ -137,57 +140,11 @@ class Firebase:
                 requester[itr]  = key
                 itr             = itr + 1
             requester   = json.dumps(requester)
-            response    =  requests.put(config.FIREBASE_USER + user_number + "/requester.json", data   = requester)
+            response    = requests.put(config.FIREBASE_USER + str(user_number) + "/requester.json", data   = requester)
             if response.status_code == 200:
                 return 1
             else:
                 return 0
         except Exception as e:            
-            logging.error("Error while updating requester of user in firebase users: " + str(e))
+            logging.error("  " + str(user_number) + ":  Error while updating requester of user in firebase users: " + str(e))
             return 0
-
-    # Cancel booking of an user
-    @staticmethod
-    def cancel_booking(user_number):
-        try:
-            response                    = requests.get(config.FIREBASE_USER + user_number + ".json")
-            current_driver              = -1
-            if response.status_code == 200:
-                response                = dict(response.json())
-                current_driver          = str(response["driver"])
-                payload                 = {}
-                payload["user"]         = C.USER_FREE
-                payload["status"]       = C.DRIVER_FREE
-                payload["bookingId"]    = C.NO_BOOKING
-                payload["fare"]         = C.NO_FARE
-                payload["from_lon"]     = C.NO_FROM
-                payload["from_lat"]     = C.NO_FROM
-                payload["to_lon"]       = C.NO_TO
-                payload["to_lat"]       = C.NO_TO
-
-                payload                 = json.dumps(payload)
-                response                = requests.put(config.FIREBASE_DRIVER + current_driver + ".json", data = payload)
-                if response.status_code != 200:
-                    return 0
-            else:
-                return 0
-            payload                     = {}
-            payload["driver"]           = C.DRIVER_FREE
-            payload["status"]           = C.USER_FREE
-            payload["requester"]        = []
-            payload["bookingId"]        = C.NO_BOOKING
-            payload["fare"]             = C.NO_FARE
-            payload["from_lon"]         = C.NO_FROM
-            payload["from_lat"]         = C.NO_FROM
-            payload["to_lon"]           = C.NO_TO
-            payload["to_lat"]           = C.NO_TO
-            payload                     = json.dumps(payload)
-            response                    = requests.put(config.FIREBASE_USER + user_number + ".json", data = payload)
-            if response.status_code == 200:
-                return current_driver, 1
-            else:
-                logging.debug("Error in cancelling booking")
-                return -1, 0
-        except Exception as e:            
-            logging.error("Error while cancelling booking of user in firebase users: " + str(e))
-            return -1, 0

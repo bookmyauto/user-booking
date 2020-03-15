@@ -1,28 +1,35 @@
+"""
+                Description : contains code for utility functions for user booking
+                Author      : Rahul Tudu
+"""
 from math import sin, cos, sqrt, atan2, radians
 
 
 class Utility:
-    
-    # computes distance between two coordinates
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   COMPUTES DISTANCE BETWEEN TWO COORDINATES                                                                               #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
     @staticmethod
     def distance(f_lat, f_lon, t_lat, t_lon):
-        R = 6373.0
-        lat1 = radians(f_lat)
-        lon1 = radians(f_lon)
-        lat2 = radians(t_lat)
-        lon2 = radians(t_lon)
+        r           = 6373.0
+        lat1        = radians(f_lat)
+        lon1        = radians(f_lon)
+        lat2        = radians(t_lat)
+        lon2        = radians(t_lon)
 
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
+        dlon        = lon2 - lon1
+        dlat        = lat2 - lat1
 
-        a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        a           = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+        c           = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-        distance = R * c
+        distance    = r * c
 
         return distance
 
-    # sort drivers based on their distances from user
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                   SORT DRIVERS BASED ON THEIR DISTANCE FROM USER                                                                          #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
     @staticmethod
     def sort_drivers(curr_lat, curr_long, data):
         try:
