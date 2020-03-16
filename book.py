@@ -167,7 +167,8 @@ class Book:
             # if already there is no booking then proceed
             if current_booking == 0:
                 conn.close()
-                result = Response.make_response(200, "Success", "We are searching drivers")
+                path_ = "bookmyauto-test/users/" + user_number
+                result = Response.make_response(200, "Success", "We are searching drivers", path=path_)
                 return result, 1
             else:
                 conn.close()
@@ -257,5 +258,5 @@ class Book:
         except Exception as e:
             if conn is not None:
                 conn.close()
-            logging.error("  " + str(user_number) + ":  Error in finding drivers: " + str(e))
+            logging.error("  " + str(user_number) + ":  Error in getting current distance: " + str(e))
             return Response.default_error
