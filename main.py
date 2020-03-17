@@ -3,7 +3,6 @@
                 Author      : Rahul Tudu
 """
 import logging
-import requests
 import threading
 import json
 from flask import make_response
@@ -27,8 +26,12 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 default_error = json.dumps(
     {"errorCode": 500, "errorMessage": "System failure", "displayMessage": "Oops something went wrong !"})
+token_expiry_error = json.dumps(
+    {"errorCode": 401, "errorMessage": "Token expired", "displayMessage": "Login again, session expired"})
 with app.app_context():
     default_error = make_response(default_error)
+with app.app_context():
+    token_expiry_error = make_response(token_expiry_error)
 logging.info("user booking started")
 
 
@@ -51,6 +54,10 @@ def book():
             stat, tok               = Authorize.verify_jwt(jwt_token)
             if stat == 0:
                 raise ValueError("Not authorized")
+            if len(tok) > 0:
+                logging.critical("failure in v1/book with token expired: ")
+                return token_expiry_error
+
             if "fromLatitude" in request.form:
                 user_number         = request.form["number"]
                 from_latitude       = request.form["fromLatitude"]
@@ -90,6 +97,9 @@ def cancel():
             stat, tok               = Authorize.verify_jwt(jwt_token)
             if stat == 0:
                 raise ValueError("Not authorized")
+            if len(tok) > 0:
+                logging.critical("failure in v1/cancel with token expired: ")
+                return token_expiry_error
             user_number             = request.form["number"]
             booking_id              = request.form["bookingId"]
             response                = Book.cancel_booking(user_number, booking_id)
@@ -118,6 +128,9 @@ def fare():
             stat, tok               = Authorize.verify_jwt(jwt_token)
             if stat == 0:
                 raise ValueError("Not authorized")
+            if len(tok) > 0:
+                logging.critical("failure in v1/fare with token expired: ")
+                return token_expiry_error
             user_number             = request.args["number"]
             from_latitude           = request.args["fromLatitude"]
             from_longitude          = request.args["fromLongitude"]
@@ -149,6 +162,9 @@ def end_trip():
             stat, tok               = Authorize.verify_jwt(jwt_token)
             if stat == 0:
                 raise ValueError("Not authorized")
+            if len(tok) > 0:
+                logging.critical("failure in v1/endTrip with token expired: ")
+                return token_expiry_error
             user_number             = request.form["number"]
             booking_id              = request.form["bookingId"]
             response                = Book.end_trip(user_number, booking_id)
@@ -178,6 +194,9 @@ def get_distance():
             stat, tok               = Authorize.verify_jwt(jwt_token)
             if stat == 0:
                 raise ValueError("Not authorized")
+            if len(tok) > 0:
+                logging.critical("failure in v1/getDistance with token expired: ")
+                return token_expiry_error
             user_number             = request.args["number"]
             driver_number           = request.args["driver"]
             curr_lon                = request.args["currLongitude"]
