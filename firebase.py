@@ -20,7 +20,7 @@ class Firebase:
             payload                     = {"driver": C.DRIVER_FREE, "status": C.USER_REQUESTING,
                                            "bookingId": booking_id, "requester": [], "seats": seats, "fare": payment,
                                            "fromLon": float(fromLon), "fromLat": float(fromLat),
-                                           "toLon": float(toLon), "toLat": float(toLat), "driverName": C.NO_NAME, "driver_vehicle": C.NO_VEHICLE}
+                                           "toLon": float(toLon), "toLat": float(toLat), "driverName": C.NO_NAME, "driverVehicle": C.NO_VEHICLE}
 
             payload                     = json.dumps(payload)
             response                    = requests.put(config.FIREBASE_USER + str(user_number) + ".json", data = payload)
