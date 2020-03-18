@@ -6,6 +6,7 @@ NO_BOOKING          = -1
 NO_SEATS            = 0
 NO_NAME             = ""
 NO_VEHICLE          = ""
+NO_IMAGE            = ""
 
 
 USER_FREE           = 0
