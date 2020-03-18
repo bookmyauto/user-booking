@@ -167,7 +167,7 @@ class Book:
             # if already there is no booking then proceed
             if current_booking == 0:
                 conn.close()
-                path_ = "bookmyauto-test/users/" + user_number
+                path_ = "users/" + user_number
                 result = Response.make_response(200, "Success", "We are searching drivers", path=path_)
                 return result, 1
             else:
