@@ -137,7 +137,7 @@ class Firebase:
             requester               = {}
             itr                     = 0
             for key, value in current_drivers.items():
-                requester[itr]  = key
+                requester[itr]  = int(key)
                 itr             = itr + 1
             requester   = json.dumps(requester)
             response    = requests.put(config.FIREBASE_USER + str(user_number) + "/requester.json", data   = requester)
