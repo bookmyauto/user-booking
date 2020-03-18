@@ -4,6 +4,8 @@ NO_FROM             = -181
 NO_TO               = -181
 NO_BOOKING          = -1
 NO_SEATS            = 0
+NO_NAME             = ""
+NO_VEHICLE          = ""
 
 
 USER_FREE           = 0

@@ -20,7 +20,7 @@ class Firebase:
             payload                     = {"driver": C.DRIVER_FREE, "status": C.USER_REQUESTING,
                                            "bookingId": booking_id, "requester": [], "seats": seats, "fare": payment,
                                            "fromLon": float(fromLon), "fromLat": float(fromLat),
-                                           "toLon": float(toLon), "toLat": float(toLat)}
+                                           "toLon": float(toLon), "toLat": float(toLat), "driver_name": C.NO_NAME, "driver_vehicle": C.NO_VEHICLE}
 
             payload                     = json.dumps(payload)
             response                    = requests.put(config.FIREBASE_USER + str(user_number) + ".json", data = payload)
@@ -76,7 +76,7 @@ class Firebase:
             payload                     = {"driver": C.DRIVER_FREE, "status": C.USER_FREE, "bookingId": C.NO_BOOKING,
                                            "seats": C.NO_SEATS, "requester": [], "fare": C.NO_FARE,
                                            "fromLon": C.NO_FROM, "fromLat": C.NO_FROM, "toLon": C.NO_TO,
-                                           "toLat": C.NO_TO}
+                                           "toLat": C.NO_TO, "driver_name": C.NO_NAME, "vehicle": C.NO_VEHICLE}
 
             payload                     = json.dumps(payload)
             response                    = requests.put(config.FIREBASE_USER + str(user_number) + ".json", data = payload)
