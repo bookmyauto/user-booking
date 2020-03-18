@@ -74,12 +74,6 @@ def book():
                     t.start()
                 with app.app_context():
                     response        = make_response(response)
-                if len(tok) > 0:
-                    response.headers["token"]           = tok
-                    response.headers["tokenStatus"]     = "new"
-                else:
-                    response.headers["token"]           = jwt_token
-                    response.headers["tokenStatus"]     = "same"
                 return response
     except RuntimeError as e:
         logging.critical("failure in v1/book with error: " + str(e))
@@ -106,12 +100,6 @@ def cancel():
             response                = json.dumps(response)
             with app.app_context():
                 response            = make_response(response)
-            if len(tok) > 0:
-                response.headers["token"]       = tok
-                response.headers["tokenStatus"] = "new"
-            else:
-                response.headers["token"]       = jwt_token
-                response.headers["tokenStatus"] = "same"
             return response
     except RuntimeError as e:
         logging.critical("failure in v1/cancel with error: " + str(e))
@@ -140,12 +128,6 @@ def fare():
             response                = json.dumps(response)
             with app.app_context():
                 response            = make_response(response)
-            if len(tok) > 0:
-                response.headers["token"]       = tok
-                response.headers["tokenStatus"] = "new"
-            else:
-                response.headers["token"]       = jwt_token
-                response.headers["tokenStatus"] = "same"
             return response
     except RuntimeError as e:
         logging.critical("failure in v1/fare with error: " + str(e))
@@ -171,12 +153,6 @@ def end_trip():
             response                = json.dumps(response)
             with app.app_context():
                 response            = make_response(response)
-            if len(tok) > 0:
-                response.headers["token"]       = tok
-                response.headers["tokenStatus"] = "new"
-            else:
-                response.headers["token"]       = jwt_token
-                response.headers["tokenStatus"] = "same"
             return response
     except RuntimeError as e:
         logging.critical("failure in v1/endTrip with error: " + str(e))
@@ -204,12 +180,6 @@ def get_distance():
             response                = Book.get_dist(user_number, curr_lon, curr_lat, driver_number)
             response                = json.dumps(response)
             response                = make_response(response)
-            if len(tok) > 0:
-                response.headers["token"]       = tok
-                response.headers["tokenStatus"] = "new"
-            else:
-                response.headers["token"]       = jwt_token
-                response.headers["tokenStatus"] = "same"
 
             return response
     except RuntimeError as e:
