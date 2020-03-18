@@ -160,10 +160,9 @@ class Book:
         try:
             conn, cur       = Sql.get_connection()
             logging.debug("  " + str(user_number) + ":  Connection and cursor received")
-            sql_query       = "select count(booking_id) from user_booking where user_number = '{0}' and (status = {1} or status = {2})"
-            cur.execute(sql_query.format(user_number, C.USER_IN_RIDE, C.USER_BOOKED))
+            sql_query       = "select count(booking_id) from user_booking where user_number = '{0}' and (status = {1} or status = {2} or status = {3})"
+            cur.execute(sql_query.format(user_number, C.USER_IN_RIDE, C.USER_BOOKED, C.USER_REQUESTING))
             current_booking = cur.fetchone()[0]
-
             # if already there is no booking then proceed
             if current_booking == 0:
                 conn.close()
