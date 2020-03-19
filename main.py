@@ -10,14 +10,6 @@ from flask import Flask
 from flask import request
 from book import Book
 from authorize import Authorize
-import ssl
-
-try:
-    _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    pass
-else:
-    ssl._create_default_https_context = _create_unverified_https_context
 
 # --------------------------------------------------------------------------------------------------------------------------------------------- #
 #                                                       INITIALIZATION                                                                          #
@@ -191,4 +183,4 @@ def get_distance():
 #                                                       THE MAIN FUNCTION                                                                       #
 # --------------------------------------------------------------------------------------------------------------------------------------------- #
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7004, debug=True, ssl_context='adhoc')
+    app.run(host='0.0.0.0', port=7004, debug=True)
