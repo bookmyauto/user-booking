@@ -1,5 +1,5 @@
 WRONG               = -1
-NO_FARE             = 0
+NO_FARE             = -1
 NO_FROM             = -181
 NO_TO               = -181
 NO_BOOKING          = "-1"

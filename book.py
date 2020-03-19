@@ -259,3 +259,11 @@ class Book:
                 conn.close()
             logging.error("  " + str(user_number) + ":  Error in getting current distance: " + str(e))
             return Response.default_error
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    #                                                                   GETTING BOOKING PATH                                                                                    #
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+    @staticmethod
+    def path(user_number):
+        result = Response.make_response(200, "", "", path="/users/"+str(user_number))
+        return result

@@ -104,6 +104,7 @@ def cancel():
 def fare():
     try:
         if request.method == "GET":
+            '''
             jwt_token               = request.headers["token"]
             stat, tok               = Authorize.verify_jwt(jwt_token)
             if stat == 0:
@@ -111,6 +112,7 @@ def fare():
             if len(tok) > 0:
                 logging.critical("failure in v1/fare with token expired: ")
                 return token_expiry_error
+            '''
             user_number             = request.args["number"]
             from_latitude           = request.args["fromLatitude"]
             from_longitude          = request.args["fromLongitude"]
@@ -176,6 +178,27 @@ def get_distance():
             return response
     except RuntimeError as e:
         logging.critical("failure in v1/getDistance with error: " + str(e))
+        return default_error
+
+
+@app.route("/v1/bookingPath", methods=["GET"])
+def get_distance():
+    try:
+        if request.method == "GET":
+            jwt_token               = request.headers["token"]
+            stat, tok               = Authorize.verify_jwt(jwt_token)
+            if stat == 0:
+                raise ValueError("Not authorized")
+            if len(tok) > 0:
+                logging.critical("failure in v1/bookingPath with token expired: ")
+                return token_expiry_error
+            user_number             = request.args["number"]
+            response                = Book.path(user_number)
+            response                = json.dumps(response)
+            response                = make_response(response)
+            return response
+    except RuntimeError as e:
+        logging.critical("failure in v1/bookingPath with error: " + str(e))
         return default_error
 
 
